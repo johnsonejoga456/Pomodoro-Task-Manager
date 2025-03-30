@@ -19,6 +19,20 @@ const PomodoroTimer = () => {
   const [cycleCount, setCycleCount] = useState<number>(0);
   const [selectedSound, setSelectedSound] = useState<string>(defaultSound);
 
+  // Local state for input values while typing
+  const [inputValues, setInputValues] = useState<{ [key: string]: string }>({
+    focusTime: (defaultFocusTime / 60).toString(),
+    shortBreakTime: (defaultShortBreakTime / 60).toString(),
+    longBreakTime: (defaultLongBreakTime / 60).toString(),
+  });
+
+  // State for input validation errors
+  const [errors, setErrors] = useState<{ [key: string]: string }>({
+    focusTime: "",
+    shortBreakTime: "",
+    longBreakTime: "",
+  });
+
   // List of available notification sounds (URLs)
   const soundOptions = [
     { name: "Default", url: "https://www.fesliyanstudios.com/play-mp3/4383" },
@@ -48,13 +62,24 @@ const PomodoroTimer = () => {
   // Initialize state from localStorage after mounting on the client
   useEffect(() => {
     // Update state with values from localStorage
-    setFocusTime(getSavedTime("focusTime", defaultFocusTime));
-    setShortBreakTime(getSavedTime("shortBreakTime", defaultShortBreakTime));
-    setLongBreakTime(getSavedTime("longBreakTime", defaultLongBreakTime));
-    setTimeLeft(getSavedTime("timeLeft", defaultFocusTime));
+    const savedFocusTime = getSavedTime("focusTime", defaultFocusTime);
+    const savedShortBreakTime = getSavedTime("shortBreakTime", defaultShortBreakTime);
+    const savedLongBreakTime = getSavedTime("longBreakTime", defaultLongBreakTime);
+
+    setFocusTime(savedFocusTime);
+    setShortBreakTime(savedShortBreakTime);
+    setLongBreakTime(savedLongBreakTime);
+    setTimeLeft(getSavedTime("timeLeft", savedFocusTime));
     setCycleCount(getSavedTime("cycleCount", 0));
     setSessionType(getSavedSessionType());
     setSelectedSound(getSavedSound());
+
+    // Update input values to reflect saved times
+    setInputValues({
+      focusTime: (savedFocusTime / 60).toString(),
+      shortBreakTime: (savedShortBreakTime / 60).toString(),
+      longBreakTime: (savedLongBreakTime / 60).toString(),
+    });
 
     // Update notification sound
     updateNotificationSound(getSavedSound());
@@ -109,28 +134,62 @@ const PomodoroTimer = () => {
     return `${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const handleTimeChange = (
-    type: "focusTime" | "shortBreakTime" | "longBreakTime",
-    value: number
-  ): void => {
-    const newTime = value * 60;
-    if (!isNaN(newTime) && newTime > 0) {
-      if (typeof window !== "undefined") {
-        localStorage.setItem(type, String(newTime));
-      }
+  const handleInputChange = (type: "focusTime" | "shortBreakTime" | "longBreakTime", value: string) => {
+    // Allow the input to be cleared or updated while typing
+    setInputValues((prev) => ({
+      ...prev,
+      [type]: value,
+    }));
+    // Clear any existing error when the user starts typing
+    setErrors((prev) => ({
+      ...prev,
+      [type]: "",
+    }));
+  };
 
-      if (type === "focusTime") {
-        setFocusTime(newTime);
-        if (sessionType === "focus") setTimeLeft(newTime);
-      } else if (type === "shortBreakTime") {
-        setShortBreakTime(newTime);
-        if (sessionType === "shortBreak") setTimeLeft(newTime);
-      } else {
-        setLongBreakTime(newTime);
-        if (sessionType === "longBreak") setTimeLeft(newTime);
-      }
+  const handleTimeChange = (type: "focusTime" | "shortBreakTime" | "longBreakTime") => {
+    const value = parseInt(inputValues[type], 10);
+    const newTime = value * 60;
+
+    // Validate input: reject 0, negative numbers, or empty input
+    if (isNaN(newTime) || newTime <= 0) {
+      setErrors((prev) => ({
+        ...prev,
+        [type]: "Value must be greater than 0",
+      }));
+      // Reset the input value to the current timer state
+      setInputValues((prev) => ({
+        ...prev,
+        [type]:
+          type === "focusTime"
+            ? (focusTime / 60).toString()
+            : type === "shortBreakTime"
+            ? (shortBreakTime / 60).toString()
+            : (longBreakTime / 60).toString(),
+      }));
+      return;
+    }
+
+    // Clear error if input is valid
+    setErrors((prev) => ({
+      ...prev,
+      [type]: "",
+    }));
+
+    // Update localStorage and state
+    if (typeof window !== "undefined") {
+      localStorage.setItem(type, String(newTime));
+    }
+
+    if (type === "focusTime") {
+      setFocusTime(newTime);
+      if (sessionType === "focus") setTimeLeft(newTime);
+    } else if (type === "shortBreakTime") {
+      setShortBreakTime(newTime);
+      if (sessionType === "shortBreak") setTimeLeft(newTime);
     } else {
-      alert("Invalid input! Please enter a number greater than 0.");
+      setLongBreakTime(newTime);
+      if (sessionType === "longBreak") setTimeLeft(newTime);
     }
   };
 
@@ -214,31 +273,43 @@ const PomodoroTimer = () => {
       {/* Custom Time Inputs */}
       <div className="grid grid-cols-3 gap-4 w-full text-center">
         {[
-          { label: "Focus", value: focusTime / 60, type: "focusTime" },
-          { label: "Short Break", value: shortBreakTime / 60, type: "shortBreakTime" },
-          { label: "Long Break", value: longBreakTime / 60, type: "longBreakTime" },
+          { label: "Focus", value: inputValues.focusTime, type: "focusTime" },
+          { label: "Short Break", value: inputValues.shortBreakTime, type: "shortBreakTime" },
+          { label: "Long Break", value: inputValues.longBreakTime, type: "longBreakTime" },
         ].map(({ label, value, type }) => (
-          <div key={type} className="flex flex-col">
+          <div key={type} className="flex flex-col space-y-1">
             <label className="text-sm text-gray-300">{label}</label>
             <input
               type="number"
               value={value}
               onChange={(e) =>
-                handleTimeChange(type as "focusTime" | "shortBreakTime" | "longBreakTime", parseInt(e.target.value))
+                handleInputChange(type as "focusTime" | "shortBreakTime" | "longBreakTime", e.target.value)
               }
-              className="bg-gray-800 p-2 rounded-md text-white border border-gray-600 w-20 text-center"
+              onBlur={() => handleTimeChange(type as "focusTime" | "shortBreakTime" | "longBreakTime")}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  handleTimeChange(type as "focusTime" | "shortBreakTime" | "longBreakTime");
+                }
+              }}
+              className={`bg-gray-800 p-2 rounded-md text-white border ${
+                errors[type] ? "border-red-500" : "border-gray-600"
+              } w-20 text-center focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300`}
+              min="1" // Prevent negative numbers in the input
             />
+            {errors[type] && (
+              <p className="text-red-500 text-xs mt-1">{errors[type]}</p>
+            )}
           </div>
         ))}
       </div>
 
       {/* Sound Selection */}
-      <div className="w-full text-center">
-        <label className="text-sm text-gray-300">Notification Sound</label>
+      <div className="w-full flex flex-col items-center">
+        <label className="text-sm text-gray-300 mb-1">Notification Sound</label>
         <select
           value={selectedSound}
           onChange={(e) => setSelectedSound(e.target.value)}
-          className="bg-gray-800 p-2 rounded-md text-white border border-gray-600 w-40 text-center"
+          className="bg-gray-800 px-4 py-2 rounded-md text-white border border-gray-600 w-full text-center focus:outline-none focus:ring-2 focus:ring-blue-500 hover:bg-gray-700 transition-all duration-300"
         >
           {soundOptions.map((option) => (
             <option key={option.url} value={option.url}>
