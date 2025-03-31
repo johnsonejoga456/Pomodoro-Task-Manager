@@ -7,7 +7,7 @@ const PomodoroTimer = () => {
   const defaultFocusTime = 25 * 60;
   const defaultShortBreakTime = 5 * 60;
   const defaultLongBreakTime = 15 * 60;
-  const defaultSound = "https://www.fesliyanstudios.com/play-mp3/4383";
+  const defaultSound = "/sounds/Alarm1.wav";
 
   // Initialize state without accessing localStorage directly
   const [focusTime, setFocusTime] = useState<number>(defaultFocusTime);
@@ -35,9 +35,10 @@ const PomodoroTimer = () => {
 
   // List of available notification sounds (URLs)
   const soundOptions = [
-    { name: "Default", url: "https://www.fesliyanstudios.com/play-mp3/4383" },
-    { name: "Bell", url: "https://www.fesliyanstudios.com/play-mp3/387" },
-    { name: "Chime", url: "https://www.fesliyanstudios.com/play-mp3/7030" },
+    { name: "Alarm 1", url: "/sounds/Alarm1.wav" },
+    { name: "Alarm 2", url: "/sounds/Alarm2.wav" },
+    { name: "Alarm3", url: "/sounds/Alarm3.wav" },
+    { name: "Alarm4", url: "/sounds/Alarm4.wav" },
   ];
 
   // Function to get saved time from localStorage (client-side only)
