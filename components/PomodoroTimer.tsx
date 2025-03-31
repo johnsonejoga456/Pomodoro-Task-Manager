@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { playNotificationSound, updateNotificationSound } from "@/hooks/useSound";
+import TaskManager from "./TaskManager";
 
 const PomodoroTimer = () => {
   // Default values for initial state (used during SSR)
@@ -18,6 +19,7 @@ const PomodoroTimer = () => {
   const [sessionType, setSessionType] = useState<"focus" | "shortBreak" | "longBreak">("focus");
   const [cycleCount, setCycleCount] = useState<number>(0);
   const [selectedSound, setSelectedSound] = useState<string>(defaultSound);
+  const [selectedTask, setSelectedTask] = useState<number | null>(null); // Track the selected task
 
   // Local state for input values while typing
   const [inputValues, setInputValues] = useState<{ [key: string]: string }>({
@@ -33,12 +35,12 @@ const PomodoroTimer = () => {
     longBreakTime: "",
   });
 
-  // List of available notification sounds (URLs)
+  // List of available notification sounds (local files)
   const soundOptions = [
     { name: "Alarm 1", url: "/sounds/Alarm1.wav" },
     { name: "Alarm 2", url: "/sounds/Alarm2.wav" },
-    { name: "Alarm3", url: "/sounds/Alarm3.wav" },
-    { name: "Alarm4", url: "/sounds/Alarm4.wav" },
+    { name: "Alarm 3", url: "/sounds/Alarm3.wav" },
+    { name: "Alarm 4", url: "/sounds/Alarm4.wav" },
   ];
 
   // Function to get saved time from localStorage (client-side only)
@@ -117,6 +119,7 @@ const PomodoroTimer = () => {
     if (sessionType === "focus") {
       setCycleCount((prev) => {
         const newCount = prev + 1;
+        // Increment Pomodoro count for the selected task (handled in TaskManager)
         setSessionType(newCount % 4 === 0 ? "longBreak" : "shortBreak");
         setTimeLeft(newCount % 4 === 0 ? longBreakTime : shortBreakTime);
         return newCount;
@@ -318,6 +321,12 @@ const PomodoroTimer = () => {
             </option>
           ))}
         </select>
+
+        {/* Pass the required props to TaskManager */}
+        <TaskManager
+          onSelectTask={setSelectedTask}
+          selectedTask={selectedTask}
+        />
       </div>
     </div>
   );
