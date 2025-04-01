@@ -35,7 +35,7 @@ const PomodoroTimer = () => {
     longBreakTime: "",
   });
 
-  // List of available notification sounds (local files)
+  // List of available notification sounds
   const soundOptions = [
     { name: "Alarm 1", url: "/sounds/Alarm1.wav" },
     { name: "Alarm 2", url: "/sounds/Alarm2.wav" },
