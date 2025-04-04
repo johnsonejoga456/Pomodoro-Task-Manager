@@ -1,7 +1,3 @@
-Below is a detailed documentation for your Pomodoro Timer project, designed to help users understand and make the most of the application. This documentation includes an overview, setup instructions, usage guide, feature descriptions, troubleshooting tips, and additional notes for developers or users who might want to extend the project. The documentation is written in a user-friendly manner, assuming the audience includes both end-users and developers who might interact with the codebase.
-
----
-
 # Pomodoro Timer Documentation
 
 ## Overview
