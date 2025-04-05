@@ -79,13 +79,6 @@ The **Pomodoro Timer** is a productivity tool built with Next.js, React, TypeScr
    ```
    Open your browser and navigate to `http://localhost:3000` to see the application.
 
-### Deployment (Optional)
-To deploy the application on Vercel:
-1. Push your code to a GitHub repository.
-2. Sign up for a Vercel account and import your repository.
-3. Vercel will automatically detect the Next.js project and deploy it. Ensure the sound files are included in the `public/sounds` directory in your repository.
-
----
 
 ## Usage Guide
 
@@ -190,19 +183,6 @@ To deploy the application on Vercel:
 - **`app/hooks/useSound.ts`**: A custom hook for managing notification sound playback.
 - **`app/globals.css`**: Global styles, including Tailwind CSS setup and custom scrollbar styling.
 - **`public/sounds/`**: Directory for notification sound files.
-
-
-3. **Add Task Categories**:
-   - Add a `category` field to the `Task` interface.
-   - Include a dropdown to filter tasks by category.
-4. **Mobile Responsiveness**:
-   - Adjust Tailwind CSS classes to make the UI responsive for smaller screens (e.g., reduce font sizes, stack elements vertically).
-
-### Known Limitations
-- **Task Editing UX**: The `prompt` for editing tasks is basic. Consider replacing it with a more user-friendly solution.
-- **Sound Playback**: Audio playback may fail in some browsers due to autoplay restrictions. Users must interact with the page first.
-- **Mobile Support**: The UI is optimized for desktop. Additional styling is needed for mobile devices.
-
 
 ## Conclusion
 
