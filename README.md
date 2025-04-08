@@ -14,10 +14,10 @@ The **Pomodoro Timer** is a productivity tool built with Next.js, React, TypeScr
 
 ### Tech Stack
 - **Framework**: Next.js (React framework for server-side rendering and static site generation)
-- **Language**: TypeScript (for type safety and better developer experience)
-- **Styling**: Tailwind CSS (utility-first CSS framework for rapid UI development)
-- **Animations**: Framer Motion (for smooth task addition/removal animations)
-- **Storage**: `localStorage` (for persisting timer settings and tasks)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Animations**: Framer Motions 
+- **Storage**: `localStorage` 
 
 ---
 
