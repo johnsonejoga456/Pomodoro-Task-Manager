@@ -187,5 +187,3 @@ The **Pomodoro Timer** is a productivity tool built with Next.js, React, TypeScr
 ## Conclusion
 
 The Pomodoro Timer is a powerful tool for boosting productivity through focused work sessions and effective task management. By following the usage guide, users can customize their workflow, track their progress, and stay organized. Developers can extend the project by adding new features, improving the UI, or optimizing for mobile use.
-
-If you encounter any issues or have suggestions for improvements, feel free to contribute to the project or reach out for support.
